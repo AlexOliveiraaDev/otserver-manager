@@ -112,7 +112,7 @@ class Conta:
             return True
 
         self.status = 'iniciando'
-        executavel = EXECUTAVEL2 if self.indice >= 1 else EXECUTAVEL
+        executavel = EXECUTAVEL2 if self.indice >= 8 else EXECUTAVEL
 
         self.inicio_tempo = datetime.now()
         self.tempo_estimado = self.inicio_tempo + timedelta(

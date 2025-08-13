@@ -1,10 +1,18 @@
 
 import os
+import shutil
 import logging
 import pyautogui
 
 
 EXECUTAVEL = os.path.join(os.environ["APPDATA"], "AureraOT", "aurera_dx.exe")
+dst = os.path.join(os.environ["APPDATA"], "AureraOT", "aurera_dx2.exe")
+
+if os.path.exists(dst):
+    os.remove(dst)
+shutil.copy2(EXECUTAVEL, dst)
+
+    
 EXECUTAVEL2 = os.path.join(os.environ["APPDATA"], "AureraOT", "aurera_dx2.exe")
 
 
