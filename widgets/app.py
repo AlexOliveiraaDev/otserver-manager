@@ -23,7 +23,7 @@ class App:
         self.root.geometry("1100x800")
         self.root.configure(bg="#2c3e50")
         
-        # Estilo customizado
+
         self.style = ttk.Style()
         self.style.theme_use('clam')
         self.style.configure('Title.TLabel', font=('Arial', 16, 'bold'), background='#2c3e50', foreground='white')
@@ -35,7 +35,7 @@ class App:
         self.running = True
         config.ocr_paused = False
         
-        # Variáveis de controle
+
         self.instancias_abertas = 0
         self.instancias_crashed = 0
         self.status_atual = "Pronto"
@@ -43,14 +43,14 @@ class App:
         self.inicio_operacao = None
         self.contas_restantes = 0
         
-        # Inicializar API Flask
+
         self.api = FlaskAPI(self)
         
         self.criar_ui()
         self.iniciar_thread_status()
         self.iniciar_auto_restart_thread()
         
-        # Iniciar API Flask em thread separada
+
         self.iniciar_api_thread()
         self.contas_iniciando = False
         for conta in self.contas:
@@ -78,27 +78,27 @@ class App:
         return contas
     
     def iniciar_hotkeys_globais(self):
-        """Inicia hotkeys globais que funcionam mesmo com janela minimizada"""
+        
         def on_hotkey():
-            # Executa toggle_ocr_pause de forma thread-safe
+
             self.root.after(0, self.toggle_ocr_pause)
         
         def hotkey_listener():
             try:
-                # Registra Ctrl+Shift+P como hotkey global
+
                 with keyboard.GlobalHotKeys({'<ctrl>+<shift>+p': on_hotkey}):
                     while self.running:
                         time.sleep(0.1)
             except Exception as e:
                 print(f"Erro no hotkey global: {e}")
         
-        # Inicia listener em thread separada
+
         hotkey_thread = threading.Thread(target=hotkey_listener, daemon=True)
         hotkey_thread.start()
         print("Hotkey global ativado: Ctrl+Shift+P para pausar/retomar OCR")
     
     def tem_contas_iniciando(self):
-        """Verifica se alguma conta está no processo de inicialização"""
+        
         iniciando = any(
             ui_elements['conta'].status in ['iniciando', 'restarting'] 
             for ui_elements in self.botoes_conta
@@ -107,7 +107,7 @@ class App:
         return iniciando or self.operacao_em_andamento
 
     def iniciar_api_thread(self):
-        """Inicia a API Flask em uma thread separada"""
+        
         def run_api():
             try:
                 self.api.run(host='0.0.0.0', port=API_PORT, debug=False)
@@ -121,7 +121,7 @@ class App:
         print(f"API disponível em: http://localhost:{API_PORT}/api/status")
         
     def toggle_ocr_pause(self):
-        """Pausa/retoma o OCR"""
+        
         config.ocr_paused = not config.ocr_paused
         
         if config.ocr_paused:
@@ -134,7 +134,7 @@ class App:
             self.atualizar_status("OCR retomado")
 
     def criar_ui(self):
-        # Header
+
         header_frame = tk.Frame(self.root, bg="#34495e", height=100)
         header_frame.pack(fill=tk.X, pady=(0, 10))
         header_frame.pack_propagate(False)
@@ -143,22 +143,22 @@ class App:
                               font=('Arial', 18, 'bold'), bg="#34495e", fg="white")
         title_label.pack(pady=10)
         
-        # API Info
+
         api_info_label = tk.Label(header_frame, text=f"API: http://localhost:{API_PORT}/api/status", 
                                  font=('Arial', 10), bg="#34495e", fg="#3498db")
         api_info_label.pack()
         
-        # OCR Info
+
         ocr_status = "Habilitado" if config.OCR_ENABLED else "Desabilitado"
         ocr_info_label = tk.Label(header_frame, text=f"OCR: {ocr_status} (Intervalo: {OCR_UPDATE_INTERVAL}s)", 
                                  font=('Arial', 10), bg="#34495e", fg="#e74c3c" if not config.OCR_ENABLED else "#27ae60")
         ocr_info_label.pack()
         
-        # Status Frame
+
         status_frame = tk.Frame(self.root, bg="#2c3e50")
         status_frame.pack(fill=tk.X, padx=20, pady=(0, 10))
         
-        # Primeira linha de status
+
         status_line1 = tk.Frame(status_frame, bg="#2c3e50")
         status_line1.pack(fill=tk.X)
         
@@ -170,7 +170,7 @@ class App:
                                       font=('Arial', 12, 'bold'), bg="#2c3e50", fg="#e67e22")
         self.contador_label.pack(side=tk.RIGHT)
         
-        # Segunda linha de status
+
         status_line2 = tk.Frame(status_frame, bg="#2c3e50")
         status_line2.pack(fill=tk.X)
         
@@ -178,19 +178,19 @@ class App:
                                    font=('Arial', 10), bg="#2c3e50", fg="#95a5a6")
         self.tempo_label.pack(side=tk.LEFT)
         
-        # Status de recursos
+
         auto_restart_status = "Ativado" if AUTO_RESTART_ENABLED else "Desativado"
         self.recursos_label = tk.Label(status_line2, text=f"Auto-Restart: {auto_restart_status} | API: Ativada | OCR: {ocr_status}", 
                                       font=('Arial', 10), bg="#2c3e50", fg="#95a5a6")
         self.recursos_label.pack(side=tk.RIGHT)
         
-        # Progress bar
+
         self.progress_var = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(status_frame, variable=self.progress_var, 
                                            mode='determinate', length=300)
         self.progress_bar.pack(pady=5)
         
-        # Botões principais
+
         buttons_frame = tk.Frame(self.root, bg="#2c3e50")
         buttons_frame.pack(fill=tk.X, padx=20, pady=(0, 20))
         
@@ -209,7 +209,7 @@ class App:
                                                  bg_color="#8e44ad", hover_color="#7d3c98")
         self.botao_restart_crashed.pack(side=tk.LEFT, padx=5)
         
-        # Botão para alternar auto-restart
+
         self.botao_toggle_auto = ModernButton(buttons_frame, "Toggle Auto-Restart", 
                                              command=self.toggle_auto_restart,
                                              bg_color="#34495e", hover_color="#2c3e50")
@@ -225,7 +225,7 @@ class App:
                                    bg_color="#fd7e14", hover_color="#e6670a")
         self.botao_pausar_ocr.pack(side=tk.LEFT, padx=5)
         
-        # Legenda de cores
+
         legenda_frame = tk.Frame(self.root, bg="#2c3e50")
         legenda_frame.pack(fill=tk.X, padx=20, pady=(0, 10))
         
@@ -245,7 +245,7 @@ class App:
             indicator.set_status(status)
             tk.Label(legenda_frame, text=texto, font=('Arial', 8), bg="#2c3e50", fg="white").pack(side=tk.LEFT, padx=(0, 10))
         
-        # Scroll frame para contas
+
         canvas = tk.Canvas(self.root, bg="#2c3e50", highlightthickness=0)
         scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
         scrollable_frame = tk.Frame(canvas, bg="#2c3e50")
@@ -266,7 +266,7 @@ class App:
         self.criar_contas_ui()
 
     def testar_ocr(self):
-        """Testa OCR em todas as contas abertas"""
+        
         if not config.OCR_ENABLED:
             self.atualizar_status("OCR não está habilitado")
             return
@@ -280,7 +280,7 @@ class App:
             for conta in contas_abertas:
                 if conta.ocr:
                     self.root.after(0, lambda c=conta.login: self.atualizar_status(f"Testando OCR em {c}..."))
-                    conta.last_ocr_update = None  # Força atualização
+                    conta.last_ocr_update = None  
                     conta.update_game_stats()
                     
                     stats = conta.game_stats
@@ -298,43 +298,43 @@ class App:
 
     def criar_contas_ui(self):
         for i, conta in enumerate(self.contas):
-            # Frame para cada conta
+
             conta_frame = tk.Frame(self.scrollable_frame, bg="#34495e", relief="raised", bd=1)
             conta_frame.pack(fill=tk.X, padx=5, pady=3)
             
-            # Informações da conta (lado esquerdo)
+
             info_frame = tk.Frame(conta_frame, bg="#34495e")
             info_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=8)
             
-            # Nome da conta
+
             nome_label = tk.Label(info_frame, text=f"Conta: {conta.login}", 
                                  font=('Arial', 11, 'bold'), bg="#34495e", fg="white")
             nome_label.pack(anchor="w")
             
-            # Informações básicas
+
             executavel_tipo = "aurera_dx2.exe" if conta.indice >= 10 else "aurera_dx.exe"
             id_label = tk.Label(info_frame, text=f"Posição: {conta.indice} | ID: {conta.id} | Executável: {executavel_tipo}", 
                                font=('Arial', 9), bg="#34495e", fg="#bdc3c7")
             id_label.pack(anchor="w")
             
-            # Tempo restante e tentativas de restart
+
             tempo_conta_label = tk.Label(info_frame, text="", 
                                         font=('Arial', 8), bg="#34495e", fg="#95a5a6")
             tempo_conta_label.pack(anchor="w")
             
-            # Estatísticas OCR (se habilitado)
+
             ocr_label = None
             if config.OCR_ENABLED:
                 ocr_label = tk.Label(info_frame, text="OCR: Aguardando dados...", 
                                     font=('Arial', 8), bg="#34495e", fg="#3498db")
                 ocr_label.pack(anchor="w")
             
-            # Frame para estatísticas detalhadas (lado direito)
+
             stats_frame = tk.Frame(conta_frame, bg="#34495e")
             if config.OCR_ENABLED:
                 stats_frame.pack(side=tk.RIGHT, padx=10, pady=5)
                 
-                # Vida e Mana
+
                 vida_label = tk.Label(stats_frame, text="💚 Vida: --/--", 
                                      font=('Arial', 8), bg="#34495e", fg="#27ae60")
                 vida_label.pack(anchor="w")
@@ -354,24 +354,24 @@ class App:
                 stats_frame = None
                 vida_label = mana_label = level_label = fps_label = None
             
-            # Botões de ação
+
             buttons_frame = tk.Frame(conta_frame, bg="#34495e")
             buttons_frame.pack(side=tk.RIGHT, padx=10, pady=5)
             
-            # Botão iniciar/parar
+
             btn_iniciar = ModernButton(buttons_frame, "Iniciar", 
                                       command=lambda c=conta: self.toggle_conta_thread(c),
                                       bg_color="#3498db", hover_color="#2980b9")
             btn_iniciar.pack(side=tk.LEFT, padx=3)
             
-            # Botão mostrar
+
             btn_mostrar = ModernButton(buttons_frame, "Mostrar", 
                                       command=lambda c=conta: c.mostrar(),
                                       bg_color="#f39c12", hover_color="#d68910")
             btn_mostrar.pack(side=tk.LEFT, padx=3)
             btn_mostrar.config(state=tk.DISABLED)
             
-            # Botão OCR (se habilitado)
+
             btn_ocr = None
             if config.OCR_ENABLED:
                 btn_ocr = ModernButton(buttons_frame, "OCR", 
@@ -380,11 +380,11 @@ class App:
                 btn_ocr.pack(side=tk.LEFT, padx=3)
                 btn_ocr.config(state=tk.DISABLED)
             
-            # Indicador de status
+
             status_indicator = StatusIndicator(buttons_frame)
             status_indicator.pack(side=tk.LEFT, padx=5)
             
-            # Armazenar referencias
+
             ui_elements = {
                 'conta': conta,
                 'btn_iniciar': btn_iniciar,
@@ -402,20 +402,20 @@ class App:
             self.botoes_conta.append(ui_elements)
 
     def atualizar_ocr_conta(self, conta):
-        """Força atualização OCR para uma conta específica"""
+        
         if not config.OCR_ENABLED or not conta.ocr or conta.status != 'aberta':
             return
             
         def atualizar_async():
             self.root.after(0, lambda: self.atualizar_status(f"Atualizando OCR para {conta.login}..."))
-            conta.last_ocr_update = None  # Força atualização
+            conta.last_ocr_update = None  
             conta.update_game_stats()
             self.root.after(0, lambda: self.atualizar_status(f"OCR atualizado para {conta.login}"))
         
         threading.Thread(target=atualizar_async, daemon=True).start()
 
     def verificar_instancias_existentes(self):
-        """Verifica e reconecta com instâncias já existentes do jogo"""
+        
         def verificar_async():
             self.root.after(0, lambda: self.atualizar_status("Verificando instâncias existentes..."))
             
@@ -442,7 +442,7 @@ class App:
         threading.Thread(target=verificar_async, daemon=True).start()
 
     def toggle_auto_restart(self):
-        """Alterna o estado do auto-restart"""
+        
         global AUTO_RESTART_ENABLED
         AUTO_RESTART_ENABLED = not AUTO_RESTART_ENABLED
         
@@ -453,7 +453,7 @@ class App:
         self.atualizar_status(f"Auto-Restart {'ativado' if AUTO_RESTART_ENABLED else 'desativado'}")
 
     def iniciar_auto_restart_thread(self):
-        """Inicia thread para monitoramento e auto-restart"""
+        
         def auto_restart_loop():
             while self.running:
                 try:
@@ -468,13 +468,13 @@ class App:
                                     self.contas_iniciando = True
                                     
                                     try:
-                                        # Atualizar UI
+
                                         self.root.after(0, lambda ind=ui_elements['status_indicator']: ind.set_status('restarting'))
                                         self.root.after(0, lambda b=ui_elements['btn_iniciar']: b.config(state=tk.DISABLED))
                                         
-                                        # Tentar reiniciar
+
                                         if conta.reiniciar_automaticamente():
-                                            # Sucesso
+
                                             self.root.after(0, lambda b=ui_elements['btn_iniciar']: b.config(text='Parar', state=tk.NORMAL))
                                             self.root.after(0, lambda ind=ui_elements['status_indicator']: ind.set_status('aberta'))
                                             self.root.after(0, lambda m=ui_elements['btn_mostrar']: m.config(state=tk.NORMAL))
@@ -482,7 +482,7 @@ class App:
                                                 self.root.after(0, lambda o=ui_elements['btn_ocr']: o.config(state=tk.NORMAL))
                                             print(f"Auto-restart bem-sucedido para {conta.login}")
                                         else:
-                                            # Falha
+
                                             self.root.after(0, lambda b=ui_elements['btn_iniciar']: b.config(state=tk.NORMAL))
                                             self.root.after(0, lambda ind=ui_elements['status_indicator']: ind.set_status('crashed'))
                                             
@@ -490,7 +490,7 @@ class App:
                                                 print(f"Máximo de tentativas de restart atingido para {conta.login}")
                              
                                     finally:
-                                        # Sempre limpar estado
+
                                         self.operacao_em_andamento = False
                                         self.contas_iniciando = False
                                     time.sleep(2)
@@ -510,33 +510,33 @@ class App:
         self.status_atual = novo_status
         self.status_label.config(text=f"Status: {novo_status}")
         
-def verificar_status_contas(self):
-    """Verifica o status de todas as contas e atualiza a interface"""
-    ocr_suspenso = self.tem_contas_iniciando() or config.ocr_paused
-    
-    if ocr_suspenso:
-        print("🚫 OCR suspenso durante operações de inicialização/restart")
-    
-    for ui_elements in self.botoes_conta:
-        conta = ui_elements['conta']
-        if conta.status == 'aberta':
-            if not conta.verificar_status():
-                # Processo terminou inesperadamente (crashed)
-                ui_elements['btn_iniciar'].config(text='Iniciar', state=tk.NORMAL)
-                ui_elements['status_indicator'].set_status('crashed')
-                ui_elements['btn_mostrar'].config(state=tk.DISABLED)
-                if ui_elements['btn_ocr']:
-                    ui_elements['btn_ocr'].config(state=tk.DISABLED)
+    def verificar_status_contas(self):
         
-        # Atualizar informações de tempo e restart
-        self.atualizar_info_conta(ui_elements)
+        ocr_suspenso = self.tem_contas_iniciando() or config.ocr_paused
         
-        # Atualizar estatísticas OCR apenas se não houver inicializações ou restarts
-        if config.OCR_ENABLED and conta.status == 'aberta' and not ocr_suspenso:
-            self.atualizar_stats_ocr_ui(ui_elements)
+        if ocr_suspenso:
+            print("🚫 OCR suspenso durante operações de inicialização/restart")
+        
+        for ui_elements in self.botoes_conta:
+            conta = ui_elements['conta']
+            if conta.status == 'aberta':
+                if not conta.verificar_status():
+
+                    ui_elements['btn_iniciar'].config(text='Iniciar', state=tk.NORMAL)
+                    ui_elements['status_indicator'].set_status('crashed')
+                    ui_elements['btn_mostrar'].config(state=tk.DISABLED)
+                    if ui_elements['btn_ocr']:
+                        ui_elements['btn_ocr'].config(state=tk.DISABLED)
+            
+
+            self.atualizar_info_conta(ui_elements)
+            
+
+            if config.OCR_ENABLED and conta.status == 'aberta' and not ocr_suspenso:
+                self.atualizar_stats_ocr_ui(ui_elements)
                 
     def get_operation_status(self):
-        """Retorna status detalhado das operações para debug/API"""
+        
         return {
             'operacao_em_andamento': self.operacao_em_andamento,
             'contas_iniciando': self.contas_iniciando,
@@ -548,7 +548,7 @@ def verificar_status_contas(self):
         }
         
     def atualizar_info_conta(self, ui_elements):
-        """Atualiza informações de tempo e restart para uma conta"""
+        
         conta = ui_elements['conta']
         tempo_restante = conta.get_tempo_restante()
         info_text = ""
@@ -583,7 +583,7 @@ def verificar_status_contas(self):
         ui_elements['tempo_label'].config(text=info_text)
 
     def atualizar_stats_ocr_ui(self, ui_elements):
-        """Atualiza estatísticas OCR na interface"""
+        
         conta = ui_elements['conta']
         stats = conta.game_stats
         
@@ -591,7 +591,7 @@ def verificar_status_contas(self):
             return
         
         try:
-            # Atualizar labels OCR
+
             if ui_elements['ocr_label']:
                 if conta.last_ocr_update:
                     tempo_desde_update = (datetime.now() - conta.last_ocr_update).total_seconds()
@@ -599,7 +599,7 @@ def verificar_status_contas(self):
                 else:
                     ui_elements['ocr_label'].config(text="OCR: Aguardando dados...")
             
-            # Atualizar estatísticas específicas
+
             ui_elements['vida_label'].config(text=f"💚 Vida: {stats.vida_atual}/{stats.vida_maxima}")
             ui_elements['mana_label'].config(text=f"💙 Mana: {stats.mana_atual}/{stats.mana_maxima}")
             ui_elements['level_label'].config(text=f"📊 Level: {stats.level}")
@@ -620,7 +620,7 @@ def verificar_status_contas(self):
         self.contador_label.config(text=f"Abertas: {self.instancias_abertas} | Crashed: {self.instancias_crashed}")
 
     def calcular_tempo_restante_total(self):
-        """Calcula o tempo restante total da operação"""
+        
         if not self.operacao_em_andamento or not self.inicio_operacao:
             return "Tempo restante: --"
         
@@ -638,7 +638,7 @@ def verificar_status_contas(self):
         return "Tempo restante: Finalizando..."
 
     def reiniciar_crashed(self):
-        """Reinicia todas as contas que crasharam"""
+        
         contas_crashed = [ui_elements['conta'] for ui_elements in self.botoes_conta if ui_elements['conta'].status == 'crashed']
         
         if not contas_crashed:
@@ -661,7 +661,7 @@ def verificar_status_contas(self):
         self.operacao_em_andamento = True
         self.contas_iniciando = True
         
-        # Encontrar elementos UI para esta conta
+
         ui_elements = None
         for elements in self.botoes_conta:
             if elements['conta'] == conta:
@@ -673,14 +673,14 @@ def verificar_status_contas(self):
             return
         
         if conta.status in ['fechada', 'crashed']:
-            # Atualizar UI - iniciando
+
             self.root.after(0, lambda: self.atualizar_status(f"Iniciando conta {conta.login}..."))
             self.root.after(0, lambda: ui_elements['status_indicator'].set_status('iniciando'))
             self.root.after(0, lambda: ui_elements['btn_iniciar'].config(state=tk.DISABLED))
             
             try:
                 if conta.iniciar():
-                    # Sucesso
+
                     self.root.after(0, lambda: ui_elements['btn_iniciar'].config(text='Parar', state=tk.NORMAL))
                     self.root.after(0, lambda: ui_elements['status_indicator'].set_status('aberta'))
                     self.root.after(0, lambda: ui_elements['btn_mostrar'].config(state=tk.NORMAL))
@@ -691,7 +691,7 @@ def verificar_status_contas(self):
                 else:
                     raise Exception("Falha na inicialização")
             except Exception as e:
-                # Erro
+
                 self.root.after(0, lambda: self.atualizar_status(f"Erro ao iniciar {conta.login}: {str(e)}"))
                 self.root.after(0, lambda: ui_elements['btn_iniciar'].config(state=tk.NORMAL))
                 self.root.after(0, lambda: ui_elements['status_indicator'].set_status('crashed'))
@@ -699,7 +699,7 @@ def verificar_status_contas(self):
                 pass
                 
         else:
-            # Fechando conta
+
             self.root.after(0, lambda: self.atualizar_status(f"Fechando conta {conta.login}..."))
             conta.fechar()
             self.root.after(0, lambda: ui_elements['btn_iniciar'].config(text='Iniciar'))
@@ -766,7 +766,7 @@ def verificar_status_contas(self):
                         conta.crash_time = datetime.now()
         
         finally:
-            # GARANTIR que sempre limpe o estado
+
             self.root.after(0, lambda: self.atualizar_contador())
             self.root.after(0, lambda: self.atualizar_status("Todas as contas foram processadas"))
             self.root.after(0, lambda: self.progress_var.set(100))
@@ -796,10 +796,10 @@ def verificar_status_contas(self):
         def atualizar_ui():
             while self.running:
                 try:
-                    # Atualiza UI periodicamente
+
                     self.root.after(100, self.atualizar_contador)
                     
-                    # Atualiza tempo restante
+
                     if self.operacao_em_andamento:
                         tempo_texto = self.calcular_tempo_restante_total()
                         self.root.after(100, lambda: self.tempo_label.config(text=tempo_texto))

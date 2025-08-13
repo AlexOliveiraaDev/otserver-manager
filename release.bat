@@ -12,7 +12,7 @@ rem Atualiza version.py
 powershell -Command "(Get-Content version.py) -replace '__version__ = \".*\"', '__version__ = \"%VERSION%\"' | Set-Content version.py -Encoding UTF8"
 
 rem Git
-git add version.py
+git add .
 git commit -m "release v%VERSION%"
 git tag v%VERSION%
 git push origin HEAD --tags

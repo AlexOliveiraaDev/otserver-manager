@@ -1,4 +1,4 @@
-# utils.py - Funções utilitárias centralizadas e otimizadas
+
 import time
 import sys
 import os
@@ -10,18 +10,18 @@ import psutil
 from config import *
 
 def esperar(segundos):
-    """Espera um número de segundos"""
+    
     for _ in range(int(segundos)):
         time.sleep(1)
 
 def resource_path(relative_path):
-    """Obtém caminho de recurso (para executáveis compilados)"""
+    
     if getattr(sys, 'frozen', False):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.abspath(relative_path)
 
 def forcar_foco_janela(hwnd):
-    """Força foco em uma janela - função centralizada"""
+    
     try:
         if not win32gui.IsWindow(hwnd):
             return False
@@ -60,7 +60,7 @@ def forcar_foco_janela(hwnd):
         return False
 
 def encontrar_janela_por_processo(used_pids=None):
-    """Encontra janela de jogo por processo - função centralizada"""
+    
     if used_pids is None:
         used_pids = set()
         
@@ -106,7 +106,7 @@ def encontrar_janela_por_processo(used_pids=None):
     return None, None
 
 def verificar_janela_valida(hwnd):
-    """Verifica se uma janela é válida - função centralizada"""
+    
     try:
         if not hwnd or not win32gui.IsWindow(hwnd):
             return False

@@ -15,7 +15,7 @@ class FlaskAPI:
         self.setup_routes()
         
     def setup_routes(self):
-        """Configura todas as rotas da API"""
+        
         
         @self.flask_app.route('/api/status', methods=['GET'])
         def get_status():
@@ -126,7 +126,7 @@ class FlaskAPI:
                 logger.error(f"Erro ao obter conta {login}: {e}")
                 return jsonify({'error': str(e)}), 500
 
-        # Rotas de controle simplificadas
+
         @self.flask_app.route('/api/start-all', methods=['POST'])
         def start_all():
             try:
@@ -250,14 +250,14 @@ class FlaskAPI:
                 return jsonify({'error': str(e)}), 500
 
     def _find_account_by_login(self, login):
-        """Encontra uma conta pelo login"""
+        
         for conta in self.app_instance.contas:
             if conta.login == login:
                 return conta
         return None
 
     def run(self, host='0.0.0.0', port=None, debug=False):
-        """Inicia o servidor Flask"""
+        
         if port is None:
             port = API_PORT
         

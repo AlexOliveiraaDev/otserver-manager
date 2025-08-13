@@ -1,22 +1,22 @@
-# gamestats.py - Classe para estatísticas do jogo (otimizada)
+
 from dataclasses import dataclass, asdict
 
 @dataclass
 class GameStats:
-    """Classe para armazenar estatísticas do jogo"""
     
-    # Informações básicas
+    
+
     name: str = ""
     level: int = 0
     xp: int = 0
     
-    # Vida e Mana
+
     vida_atual: int = 0
     vida_maxima: int = 0
     mana_atual: int = 0
     mana_maxima: int = 0
     
-    # Atributos do personagem
+
     hit_points: int = 0
     capacity: int = 0
     speed: int = 0
@@ -25,11 +25,11 @@ class GameStats:
     magic_level: int = 0
     offline_training: int = 0
     
-    # Performance
+
     fps: int = 0
     ping: int = 0
     
-    # Skills de combate
+
     fist_fighting: int = 0
     club_fighting: int = 0
     sword_fighting: int = 0
@@ -39,7 +39,7 @@ class GameStats:
     fishing: int = 0
     
     def to_dict(self):
-        """Converte para dicionário organizado"""
+        
         data = asdict(self)
         return {
             'name': data['name'],

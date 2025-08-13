@@ -12,7 +12,7 @@ from ocr.ocr import OCR
 from utils import esperar, forcar_foco_janela, encontrar_janela_por_processo, verificar_janela_valida
 
 class Conta:
-    # Variável de classe centralizada para PIDs usados
+
     _used_pids = set()
     
     def __init__(self, login, senha, id, indice):
@@ -31,7 +31,7 @@ class Conta:
         self.restart_attempts = 0
         self.last_window_check = None
         
-        # OCR Integration
+
         self.game_stats = GameStats()
         self.last_ocr_update = None
         config.ocr_paused = False
@@ -40,7 +40,7 @@ class Conta:
         self.ocr = ocr
 
     def _encontrar_janela_processo(self):
-        """Encontra janela específica desta conta"""
+        
         hwnd, proc = encontrar_janela_por_processo(self._used_pids)
         if hwnd and proc:
             self.process = proc
@@ -69,7 +69,7 @@ class Conta:
             return False
 
     def verificar_instancia_existente(self):
-        """Verifica se já existe uma instância rodando"""
+        
         try:
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
@@ -146,7 +146,7 @@ class Conta:
             esperar(DELAY_INICIAL)
             DELAY_INICIAL *= 1.02
 
-            # Sequência de login
+
             for _ in range(3):
                 pyautogui.keyDown('ctrl')
                 pyautogui.press('a')
@@ -197,43 +197,43 @@ class Conta:
             print(f"Erro ao mostrar janela de {self.login}: {e}")
             return False
 
-def update_game_stats(self):
-    """Atualiza estatísticas do jogo via OCR"""
-    if not config.OCR_ENABLED or not self.ocr or self.status != 'aberta':
-        return
+    def update_game_stats(self):
         
-    # Verificação para não executar durante operações críticas
-    if hasattr(self, '_app_instance') and self._app_instance:
-        if self._app_instance.tem_contas_iniciando() or config.ocr_paused:
-            print(f"🚫 OCR suspenso para {self.login}")
+        if not config.OCR_ENABLED or not self.ocr or self.status != 'aberta':
+            return
+            
+
+        if hasattr(self, '_app_instance') and self._app_instance:
+            if self._app_instance.tem_contas_iniciando() or config.ocr_paused:
+                print(f"🚫 OCR suspenso para {self.login}")
+                return
+            
+        agora = datetime.now()
+        if (self.last_ocr_update and 
+            (agora - self.last_ocr_update).total_seconds() < OCR_UPDATE_INTERVAL):
             return
         
-    agora = datetime.now()
-    if (self.last_ocr_update and 
-        (agora - self.last_ocr_update).total_seconds() < OCR_UPDATE_INTERVAL):
-        return
-    
-    try:
-        # Só muda foco se não houver operações críticas
-        if hasattr(self, '_app_instance') and self._app_instance:
-            if not self._app_instance.operacao_em_andamento:
+        try:
+
+            if hasattr(self, '_app_instance') and self._app_instance:
+                if not self._app_instance.operacao_em_andamento:
+                    self.mostrar()
+                    time.sleep(0.5)
+                    print(f"🎯 OCR com foco para {self.login}")
+                else:
+                    print(f"👁️ OCR sem mudança de foco para {self.login}")
+            else:
                 self.mostrar()
                 time.sleep(0.5)
-                print(f"🎯 OCR com foco para {self.login}")
-            else:
-                print(f"👁️ OCR sem mudança de foco para {self.login}")
-        else:
-            self.mostrar()
-            time.sleep(0.5)
-            
-        self.game_stats = self.ocr.get_all_stats()
-        self.last_ocr_update = agora
-        print(f"✅ OCR atualizado para {self.login}: Level {self.game_stats.level}, Vida {self.game_stats.vida_atual}/{self.game_stats.vida_maxima}")
-    except Exception as e:
-        print(f"❌ Erro ao atualizar stats OCR para {self.login}: {e}")
+                
+            self.game_stats = self.ocr.get_all_stats()
+            self.last_ocr_update = agora
+            print(f"✅ OCR atualizado para {self.login}: Level {self.game_stats.level}, Vida {self.game_stats.vida_atual}/{self.game_stats.vida_maxima}")
+        except Exception as e:
+            print(f"❌ Erro ao atualizar stats OCR para {self.login}: {e}")
 
     def verificar_janela_ativa(self):
-        """Verifica se a janela está ativa usando função centralizada"""
+        
         try:
             if not verificar_janela_valida(self.hwnd):
                 print(f"Janela {self.login} inválida")
@@ -260,7 +260,7 @@ def update_game_stats(self):
             
             self._used_pids.discard(self.pid)
         
-        # Reset de todas as variáveis
+
         self.hwnd = None
         self.window_title = None
         self.pid = None
@@ -286,7 +286,7 @@ def update_game_stats(self):
         
         self.last_window_check = agora
         
-        # Verificar processo
+
         processo_ativo = False
         if self.pid:
             try:
@@ -297,12 +297,12 @@ def update_game_stats(self):
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 pass
         
-        # Verificar janela
+
         janela_ativa = self.verificar_janela_ativa()
         if not janela_ativa and processo_ativo:
             janela_ativa = self.encontrar_hwnd()
         
-        # Se nem processo nem janela estão ativos, conta crashou
+
         if not processo_ativo and not janela_ativa:
             self.status = 'crashed'
             self.crash_time = datetime.now()
@@ -316,7 +316,7 @@ def update_game_stats(self):
             print(f"Conta {self.login} crashou às {self.crash_time}")
             return False
         
-        # Atualizar estatísticas OCR
+
         self.update_game_stats()
         return True
 

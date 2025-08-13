@@ -1,4 +1,4 @@
-# ocr/ocr.py - Sistema OCR otimizado
+
 import re
 import json
 import os
@@ -11,11 +11,11 @@ from gamestats import GameStats
 from utils import resource_path
 from config import DEFAULT_OCR_REGIONS, OCR_CONFIG
 
-# Configurar Tesseract
+
 pytesseract.pytesseract.tesseract_cmd = resource_path("bin/tesseract.exe")
 
 class OCR:
-    """Sistema OCR simplificado para detectar elementos na tela"""
+    
     
     def __init__(self, hwnd=None, config_file=None):
         self.hwnd = hwnd
@@ -26,7 +26,7 @@ class OCR:
         
 
     def _load_config(self):
-        """Carrega configurações do arquivo"""
+        
         if os.path.exists(self.config_file):
             try:
                 with open(self.config_file, 'r', encoding='utf-8') as f:
@@ -38,12 +38,12 @@ class OCR:
                 print(f"⚠️ Erro ao carregar configurações OCR: {e}")
         
     def set_window_handle(self, hwnd):
-        """Define o handle da janela"""
+        
         self.hwnd = hwnd
         
         
     def capture_region(self, coords: Tuple[int, int, int, int]) -> Optional[Image.Image]:
-        """Captura região específica da tela"""
+        
         try:
             x1, y1, x2, y2 = coords
             return pyautogui.screenshot(region=(x1, y1, x2 - x1, y2 - y1))
@@ -52,7 +52,7 @@ class OCR:
             return None
             
     def extract_text_from_region(self, region_name: str) -> str:
-        """Extrai texto de uma região"""
+        
         if region_name not in self.regions:
             return ""
             
@@ -68,18 +68,18 @@ class OCR:
             return ""
             
     def extract_vida_mana(self, region_name: str) -> Tuple[int, int]:
-        """Extrai valores de vida ou mana (atual/máximo)"""
+        
         try:
             text = self.extract_text_from_region(region_name)
             if not text:
                 return 0, 0
                 
-            # Procura padrão "atual/máximo"
+
             match = re.search(r'(\d+)\s*/\s*(\d+)', text)
             if match:
                 return int(match.group(1)), int(match.group(2))
                 
-            # Procura números separados
+
             numbers = re.findall(r'\d+', text)
             if len(numbers) >= 2:
                 return int(numbers[0]), int(numbers[1])
@@ -88,7 +88,7 @@ class OCR:
         return 0, 0
         
     def extract_single_number(self, region_name: str) -> int:
-        """Extrai um único número de uma região"""
+        
         try:
             text = self.extract_text_from_region(region_name)
             numbers = re.findall(r'\d+', text)
@@ -97,7 +97,7 @@ class OCR:
             return 0
         
     def extract_character_info(self) -> Dict[str, int]:
-        """Extrai informações do personagem"""
+        
         try:
             text = self.extract_text_from_region('character_info')
             if not text:
@@ -125,7 +125,7 @@ class OCR:
             return {}
             
     def extract_combat_skills(self) -> Dict[str, int]:
-        """Extrai skills de combate"""
+        
         try:
             text = self.extract_text_from_region('combat_skills')
             if not text:
@@ -151,30 +151,30 @@ class OCR:
             return {}
             
     def get_all_stats(self, force_focus=True):
-        """Coleta todas as estatísticas da tela"""
+        
         stats = GameStats()
         
         try:
             if not force_focus:
                 print("OCR executando sem mudança de foco")
             
-            # Vida e Mana
+
             stats.vida_atual, stats.vida_maxima = self.extract_vida_mana('vida_texto')
             stats.mana_atual, stats.mana_maxima = self.extract_vida_mana('mana_texto')
             
-            # Performance
+
             stats.fps = self.extract_single_number('fps_texto')
             stats.ping = self.extract_single_number('ping_texto')
             
-            # Nome
+
             stats.name = self.extract_text_from_region('name')
             
-            # Informações do personagem
+
             char_info = self.extract_character_info()
             for key, value in char_info.items():
                 setattr(stats, key, value)
                 
-            # Skills de combate
+
             combat_skills = self.extract_combat_skills()
             for key, value in combat_skills.items():
                 setattr(stats, key, value)
@@ -186,7 +186,7 @@ class OCR:
         return stats
         
     def save_regions_to_file(self, filename=None):
-        """Salva regiões para arquivo"""
+        
         if filename is None:
             filename = self.config_file
             
@@ -208,7 +208,7 @@ class OCR:
             return False
             
     def load_regions_from_file(self, filename=None):
-        """Carrega regiões de arquivo"""
+        
         if filename is None:
             filename = self.config_file
             
@@ -229,7 +229,7 @@ class OCR:
             print(f"❌ Erro ao carregar regiões: {e}")
             return False
     def open_region_configurator(self, parent, account_name=""):
-        """Abre janela de configuração de regiões"""
+        
         from region_config_window import RegionConfigWindow
         return RegionConfigWindow(parent, self, account_name)
         

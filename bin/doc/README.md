@@ -1,5 +1,3 @@
-# Tesseract OCR
-
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/tesseract-ocr/badge.svg)](https://scan.coverity.com/projects/tesseract-ocr)
 [![CodeQL](https://github.com/tesseract-ocr/tesseract/workflows/CodeQL/badge.svg)](https://github.com/tesseract-ocr/tesseract/security/code-scanning)
 [![OSS-Fuzz](https://img.shields.io/badge/oss--fuzz-fuzzing-brightgreen)](https://issues.oss-fuzz.com/issues?q=is:open%20title:tesseract-ocr)
@@ -7,20 +5,16 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://raw.githubusercontent.com/tesseract-ocr/tesseract/main/LICENSE)
 [![Downloads](https://img.shields.io/badge/download-all%20releases-brightgreen.svg)](https://github.com/tesseract-ocr/tesseract/releases/)
 
-## Table of Contents
-
-* [Tesseract OCR](#tesseract-ocr)
-  * [About](#about)
-  * [Brief history](#brief-history)
-  * [Installing Tesseract](#installing-tesseract)
-  * [Running Tesseract](#running-tesseract)
-  * [For developers](#for-developers)
-  * [Support](#support)
-  * [License](#license)
-  * [Dependencies](#dependencies)
-  * [Latest Version of README](#latest-version-of-readme)
-
-## About
+- [Tesseract OCR](#tesseract-ocr)
+  - [About](#about)
+  - [Brief history](#brief-history)
+  - [Installing Tesseract](#installing-tesseract)
+  - [Running Tesseract](#running-tesseract)
+  - [For developers](#for-developers)
+  - [Support](#support)
+  - [License](#license)
+  - [Dependencies](#dependencies)
+  - [Latest Version of README](#latest-version-of-readme)
 
 This package contains an **OCR engine** - `libtesseract` and a **command line program** - `tesseract`.
 
@@ -43,8 +37,6 @@ This project **does not include a GUI application**. If you need one, please see
 Tesseract **can be trained to recognize other languages**.
 See [Tesseract Training](https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html) for more information.
 
-## Brief history
-
 Tesseract was originally developed at Hewlett-Packard Laboratories Bristol UK and at Hewlett-Packard Co, Greeley Colorado USA between 1985 and 1994, with some more changes made in 1996 to port to Windows, and some C++izing in 1998. In 2005 Tesseract was open sourced by HP. From 2006 until November 2018 it was developed by Google.
 
 Major version 5 is the current stable version and started with release
@@ -58,14 +50,10 @@ and [planning documentation](https://tesseract-ocr.github.io/tessdoc/Planning.ht
 See **[Release Notes](https://tesseract-ocr.github.io/tessdoc/ReleaseNotes.html)**
 and **[Change Log](https://github.com/tesseract-ocr/tesseract/blob/main/ChangeLog)** for more details of the releases.
 
-## Installing Tesseract
-
 You can either [Install Tesseract via pre-built binary package](https://tesseract-ocr.github.io/tessdoc/Installation.html)
 or [build it from source](https://tesseract-ocr.github.io/tessdoc/Compiling.html).
 
 Before building Tesseract from source, please check that your system has a compiler which is one of the [supported compilers](https://tesseract-ocr.github.io/tessdoc/supported-compilers.html).
-
-## Running Tesseract
 
 Basic **[command line usage](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html)**:
 
@@ -75,15 +63,11 @@ For more information about the various command line options use `tesseract --hel
 
 Examples can be found in the [documentation](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html#simplest-invocation-to-ocr-an-image).
 
-## For developers
-
 Developers can use `libtesseract` [C](https://github.com/tesseract-ocr/tesseract/blob/main/include/tesseract/capi.h) or
 [C++](https://github.com/tesseract-ocr/tesseract/blob/main/include/tesseract/baseapi.h) API to build their own application. If you need bindings to `libtesseract` for other programming languages, please see the
 [wrapper](https://tesseract-ocr.github.io/tessdoc/AddOns.html#tesseract-wrappers) section in the AddOns documentation.
 
 Documentation of Tesseract generated from source code by doxygen can be found on [tesseract-ocr.github.io](https://tesseract-ocr.github.io/).
-
-## Support
 
 Before you submit an issue, please review **[the guidelines for this repository](https://github.com/tesseract-ocr/tesseract/blob/main/CONTRIBUTING.md)**.
 
@@ -93,12 +77,10 @@ If not, search the [Tesseract user forum](https://groups.google.com/g/tesseract-
 
 Mailing-lists:
 
-* [tesseract-ocr](https://groups.google.com/g/tesseract-ocr) - For tesseract users.
-* [tesseract-dev](https://groups.google.com/g/tesseract-dev) - For tesseract developers.
+- [tesseract-ocr](https://groups.google.com/g/tesseract-ocr) - For tesseract users.
+- [tesseract-dev](https://groups.google.com/g/tesseract-dev) - For tesseract developers.
 
 Please report an issue only for a **bug**, not for asking questions.
-
-## License
 
     The code in this repository is licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -117,15 +99,11 @@ Please report an issue only for a **bug**, not for asking questions.
 Tesseract uses [Leptonica library](http://leptonica.com/) which essentially
 uses a [BSD 2-clause license](http://leptonica.com/about-the-license.html).
 
-## Dependencies
-
 Tesseract uses [Leptonica library](https://github.com/DanBloomberg/leptonica)
 for opening input images (e.g. not documents like pdf).
 It is suggested to use leptonica with built-in support for [zlib](https://zlib.net),
 [png](https://sourceforge.net/projects/libpng) and
 [tiff](http://www.simplesystems.org/libtiff) (for multipage tiff).
-
-## Latest Version of README
 
 For the latest online version of the README.md see:
 

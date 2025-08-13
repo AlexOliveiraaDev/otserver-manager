@@ -6,7 +6,7 @@ from widgets.app import App
 from updater import check_updates_on_startup
 
 if __name__ == "__main__":
-    # Verificar atualizações na inicialização
+
     print("AureraOT Launcher - Verificando atualizações...")
     check_updates_on_startup()
     

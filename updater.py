@@ -7,8 +7,8 @@ import shutil
 import tempfile
 from version import __version__
 
-# Configurações
-GITHUB_REPO = "AlexOliveiraaDev/otserver-manager"  # Substitua pelo seu repo
+
+GITHUB_REPO = "AlexOliveiraaDev/otserver-manager"  
 GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 CURRENT_VERSION = __version__
 
@@ -22,9 +22,9 @@ class Updater:
             if response.status_code == 200:
                 print(response.json())
                 data = response.json()
-                version = data['tag_name'].replace('v', '')  # Remove 'v' se houver
+                version = data['tag_name'].replace('v', '')  
                 
-                # Procura por arquivo .zip nos assets
+
                 download_url = data["zipball_url"]
                 
                 
@@ -39,7 +39,7 @@ class Updater:
             current_parts = [int(x) for x in current.split('.')]
             remote_parts = [int(x) for x in remote.split('.')]
             
-            # Normaliza tamanhos
+
             while len(current_parts) < len(remote_parts):
                 current_parts.append(0)
             while len(remote_parts) < len(current_parts):
@@ -50,7 +50,7 @@ class Updater:
             return False
     
     def check_for_updates(self):
-        """Verifica se há atualizações disponíveis"""
+        
         print("Verificando atualizações...")
         remote_version, _ = self.get_remote_version_and_download_url()
         
@@ -64,17 +64,17 @@ class Updater:
         return self.compare_versions(CURRENT_VERSION, remote_version)
     
     def download_and_extract(self, download_url):
-        """Baixa e extrai a release"""
+        
         try:
             print("Baixando atualização...")
             
-            # Baixa o arquivo
+
             response = requests.get(download_url, stream=True)
             if response.status_code != 200:
                 print("Erro ao baixar arquivo")
                 return False
             
-            # Salva em arquivo temporário
+
             with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as temp_file:
                 for chunk in response.iter_content(chunk_size=8192):
                     temp_file.write(chunk)
@@ -115,7 +115,7 @@ class Updater:
             return False
     
     def update(self):
-        """Executa download e extração da release"""
+        
         _, download_url = self.get_remote_version_and_download_url()
         
         if not download_url:
@@ -125,7 +125,7 @@ class Updater:
         return self.download_and_extract(download_url)
     
     def auto_update(self):
-        """Processo completo de verificação e atualização"""
+        
         if self.check_for_updates():
             print("\n🔄 Nova versão disponível!")
             resposta = input("Deseja atualizar agora? (s/n): ").lower().strip()
@@ -142,7 +142,7 @@ class Updater:
             print("✅ Launcher está atualizado!")
 
 def check_updates_on_startup():
-    """Função para verificar atualizações na inicialização"""
+    
     updater = Updater()
     updater.auto_update()
 
