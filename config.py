@@ -5,15 +5,15 @@ import logging
 import pyautogui
 
 
-EXECUTAVEL = os.path.join(os.environ["APPDATA"], "AureraOT", "aurera_dx.exe")
-dst = os.path.join(os.environ["APPDATA"], "AureraOT", "aurera_dx2.exe")
+EXECUTAVEL = os.path.join(os.environ["APPDATA"], "OTClientV8","Aurera","aurera_dx.exe")
+dst = os.path.join(os.environ["APPDATA"], "OTClientV8","Aurera","aurera_dx2.exe")
 
 if os.path.exists(dst):
     os.remove(dst)
 shutil.copy2(EXECUTAVEL, dst)
 
     
-EXECUTAVEL2 = os.path.join(os.environ["APPDATA"], "AureraOT", "aurera_dx2.exe")
+EXECUTAVEL2 = dst
 
 
 DELAY_INICIAL = 22.0
