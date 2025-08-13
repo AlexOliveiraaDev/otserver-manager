@@ -1,0 +1,1 @@
+python -m PyInstaller --icon=icon.ico --add-data "bin;bin" --add-data "ocr;ocr" --add-data "widgets;widgets" --name AureraOTLauncher main.py

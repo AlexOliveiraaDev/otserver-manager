@@ -1,0 +1,6 @@
+dist
+build
+_pycache_
+*.spec
+*.log
+accounts.txt
