@@ -145,7 +145,15 @@ class Conta:
             
             esperar(DELAY_INICIAL)
             DELAY_INICIAL *= 1.02
-
+        
+            screen_text = self.ocr.read_screen(400)
+            print(screen_text)
+            
+            while(not "login" in screen_text):
+                pyautogui.press('enter')
+                time.sleep(5)
+                screen_text = self.ocr.read_screen(400)
+                time.sleep(1)
 
             for _ in range(3):
                 pyautogui.keyDown('ctrl')
