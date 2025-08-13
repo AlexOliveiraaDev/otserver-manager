@@ -486,7 +486,7 @@ class App:
                                             self.root.after(0, lambda b=ui_elements['btn_iniciar']: b.config(state=tk.NORMAL))
                                             self.root.after(0, lambda ind=ui_elements['status_indicator']: ind.set_status('crashed'))
                                             
-                                            if conta.restart_attempts >= conta.max_restart_attempts:
+                                            if conta.restart_attempts >= config.MAX_RESTART_ATTEMPTS:
                                                 print(f"Máximo de tentativas de restart atingido para {conta.login}")
                              
                                     finally:
@@ -559,13 +559,13 @@ class App:
         
         if conta.restart_attempts > 0:
             if info_text:
-                info_text += f" | Restarts: {conta.restart_attempts}/{conta.max_restart_attempts}"
+                info_text += f" | Restarts: {conta.restart_attempts}/{config.MAX_RESTART_ATTEMPTS}"
             else:
-                info_text = f"Restarts: {conta.restart_attempts}/{conta.max_restart_attempts}"
+                info_text = f"Restarts: {conta.restart_attempts}/{config.MAX_RESTART_ATTEMPTS}"
         
         if conta.status == 'crashed' and conta.crash_time:
             tempo_desde_crash = (datetime.now() - conta.crash_time).total_seconds()
-            if AUTO_RESTART_ENABLED and conta.restart_attempts < conta.max_restart_attempts:
+            if AUTO_RESTART_ENABLED and conta.restart_attempts < config.MAX_RESTART_ATTEMPTS:
                 tempo_para_restart = max(0, AUTO_RESTART_DELAY - tempo_desde_crash)
                 if tempo_para_restart > 0:
                     mins, secs = divmod(int(tempo_para_restart), 60)
@@ -613,7 +613,6 @@ class App:
             if conta.status == "iniciando":
                 break
         
-        print("Atualizando contador de instâncias...")
         self.verificar_status_contas()
         self.instancias_abertas = sum(1 for ui_elements in self.botoes_conta if ui_elements['conta'].status == 'aberta')
         self.instancias_crashed = sum(1 for ui_elements in self.botoes_conta if ui_elements['conta'].status == 'crashed')
