@@ -20,7 +20,6 @@ class Updater:
         try:
             response = requests.get(GITHUB_API_URL, timeout=10)
             if response.status_code == 200:
-                print(response.json())
                 data = response.json()
                 version = data['tag_name'].replace('v', '')  
                 
