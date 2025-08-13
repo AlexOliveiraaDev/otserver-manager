@@ -21,6 +21,7 @@ API_PORT = 5000
 # === CONFIGURAÇÕES DO OCR ===
 OCR_ENABLED = True
 OCR_CONFIG = '--psm 6'
+ocr_paused = False
 
 # === REGIÕES OCR PADRÃO ===
 DEFAULT_OCR_REGIONS = {

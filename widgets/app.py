@@ -33,7 +33,7 @@ class App:
         self.contas = self.ler_contas(r'accounts.txt')
         self.queue = Queue()
         self.running = True
-        self.ocr_pausado = False
+        config.ocr_paused = False
         
         # Variáveis de controle
         self.instancias_abertas = 0
@@ -122,9 +122,9 @@ class App:
         
     def toggle_ocr_pause(self):
         """Pausa/retoma o OCR"""
-        self.ocr_pausado = not self.ocr_pausado
+        config.ocr_paused = not config.ocr_paused
         
-        if self.ocr_pausado:
+        if config.ocr_paused:
             config.OCR_ENABLED = False
             self.botao_pausar_ocr.config(text="▶️ Retomar OCR")
             self.atualizar_status("OCR pausado")
@@ -510,30 +510,30 @@ class App:
         self.status_atual = novo_status
         self.status_label.config(text=f"Status: {novo_status}")
         
-    def verificar_status_contas(self):
-        """Verifica o status de todas as contas e atualiza a interface"""
-        ocr_suspenso = self.tem_contas_iniciando() or self.ocr_pausado
+def verificar_status_contas(self):
+    """Verifica o status de todas as contas e atualiza a interface"""
+    ocr_suspenso = self.tem_contas_iniciando() or config.ocr_paused
+    
+    if ocr_suspenso:
+        print("🚫 OCR suspenso durante operações de inicialização/restart")
+    
+    for ui_elements in self.botoes_conta:
+        conta = ui_elements['conta']
+        if conta.status == 'aberta':
+            if not conta.verificar_status():
+                # Processo terminou inesperadamente (crashed)
+                ui_elements['btn_iniciar'].config(text='Iniciar', state=tk.NORMAL)
+                ui_elements['status_indicator'].set_status('crashed')
+                ui_elements['btn_mostrar'].config(state=tk.DISABLED)
+                if ui_elements['btn_ocr']:
+                    ui_elements['btn_ocr'].config(state=tk.DISABLED)
         
-        if ocr_suspenso:
-            print("🚫 OCR suspenso durante operações de inicialização")
+        # Atualizar informações de tempo e restart
+        self.atualizar_info_conta(ui_elements)
         
-        for ui_elements in self.botoes_conta:
-            conta = ui_elements['conta']
-            if conta.status == 'aberta':
-                if not conta.verificar_status():
-                    # Processo terminou inesperadamente (crashed)
-                    ui_elements['btn_iniciar'].config(text='Iniciar', state=tk.NORMAL)
-                    ui_elements['status_indicator'].set_status('crashed')
-                    ui_elements['btn_mostrar'].config(state=tk.DISABLED)
-                    if ui_elements['btn_ocr']:
-                        ui_elements['btn_ocr'].config(state=tk.DISABLED)
-            
-            # Atualizar informações de tempo e restart
-            self.atualizar_info_conta(ui_elements)
-            
-            # Atualizar estatísticas OCR apenas se não houver inicializações
-            if config.OCR_ENABLED and conta.status == 'aberta' and not ocr_suspenso:
-                self.atualizar_stats_ocr_ui(ui_elements)
+        # Atualizar estatísticas OCR apenas se não houver inicializações ou restarts
+        if config.OCR_ENABLED and conta.status == 'aberta' and not ocr_suspenso:
+            self.atualizar_stats_ocr_ui(ui_elements)
                 
     def get_operation_status(self):
         """Retorna status detalhado das operações para debug/API"""
