@@ -13,13 +13,14 @@ from api import FlaskAPI
 from config import *
 import config
 from pynput import keyboard
+import version
 
 
 
 class App:
     def __init__(self, root, ocr):
         self.root = root
-        self.root.title("Dashboard de Contas v3")
+        self.root.title("Dashboard de Contas - " + version.__version__ )
         self.root.geometry("1100x800")
         self.root.configure(bg="#2c3e50")
         
@@ -139,7 +140,7 @@ class App:
         header_frame.pack(fill=tk.X, pady=(0, 10))
         header_frame.pack_propagate(False)
         
-        title_label = tk.Label(header_frame, text="Dashboard de Contas v3", 
+        title_label = tk.Label(header_frame, text="Dashboard de Contas - " + version.__version__, 
                               font=('Arial', 18, 'bold'), bg="#34495e", fg="white")
         title_label.pack(pady=10)
         

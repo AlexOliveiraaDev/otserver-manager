@@ -159,6 +159,7 @@ class Conta:
 
             pyautogui.write(self.login)
             pyautogui.press('tab')
+            time.sleep(0.5)
             pyautogui.write(self.senha)
             pyautogui.press('enter')
 
