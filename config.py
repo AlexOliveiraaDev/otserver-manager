@@ -5,7 +5,7 @@ import logging
 import pyautogui
 
 
-base_path = os.path.join(os.environ["APPDATA"], "OTClientV8", "Aurera")
+base_path = os.path.join(os.environ["APPDATA"], "otclientv8-master")
 EXECUTAVEL = os.path.join(base_path, "aurera_dx.exe")
 dst = os.path.join(base_path, "aurera_dx2.exe")
 

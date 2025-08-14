@@ -69,7 +69,7 @@ def encontrar_janela_por_processo(used_pids=None):
         try:
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
-                    if 'aurera' in proc.info['name'].lower() and 'dashboard' not in proc.info['name'].lower():
+                    if 'otc' in proc.info['name'].lower() and 'dashboard' not in proc.info['name'].lower():
                         if proc.pid in used_pids:
                             continue
                         

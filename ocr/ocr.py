@@ -236,14 +236,14 @@ class OCR:
         from region_config_window import RegionConfigWindow
         return RegionConfigWindow(parent, self, account_name)
     
-
     def read_screen(self) -> str:
         try:
-            screenshot = ImageGrab.grab(bbox=(822, 380, 1116, 694))
-            a = pytesseract.image_to_string(screenshot, config='--psm 6').strip()
+            screenshot = ImageGrab.grab(bbox=(800, 400, 1100, 600))
+            a = pytesseract.image_to_string(screenshot, config='--psm 3').strip()
             print(a)
             return a
         except Exception as e:
             print(f"Erro ao extrair texto da tela: {e}")
             return ""
+
 

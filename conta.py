@@ -73,7 +73,7 @@ class Conta:
         try:
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
-                    if 'aurera' in proc.info['name'].lower() and proc.pid not in self._used_pids:
+                    if 'otc' in proc.info['name'].lower() and proc.pid not in self._used_pids:
                         def callback(hwnd, pid_list):
                             try:
                                 _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
@@ -158,16 +158,6 @@ class Conta:
                 time.sleep(2)
                 screen_text = self.ocr.read_screen()
                 time.sleep(1)
-
-            for _ in range(3):
-                pyautogui.keyDown('ctrl')
-                pyautogui.press('a')
-                pyautogui.keyUp('ctrl')
-                time.sleep(0.05)
-                pyautogui.press('delete')
-                time.sleep(0.05)
-                pyautogui.press('tab')
-                time.sleep(0.2)
 
             pyautogui.write(self.login)
             pyautogui.press('tab')
