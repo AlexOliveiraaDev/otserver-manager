@@ -6,8 +6,8 @@ import pyautogui
 
 
 base_path = os.path.join(os.environ["APPDATA"], "otclientv8-master")
-EXECUTAVEL = os.path.join(base_path, "aurera_dx.exe")
-dst = os.path.join(base_path, "aurera_dx2.exe")
+EXECUTAVEL = os.path.join(base_path, "otclient_dx.exe")
+dst = os.path.join(base_path, "otclient_dx2.exe")
 
 if os.path.exists(dst):
     os.remove(dst)
