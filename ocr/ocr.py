@@ -2,6 +2,7 @@
 import re
 import json
 import os
+import time
 from typing import Optional, Tuple, Dict
 import pytesseract
 import pyautogui
@@ -24,35 +25,7 @@ class OCR:
         self.current_stats = GameStats()
         self._load_config()
         
-    def read_screen(padding):
-        """
-        Captura e lê texto da tela excluindo uma área de padding das bordas.
-        
-        Args:
-            padding (int): Tamanho do padding em pixels para excluir das bordas
-            
-        Returns:
-            str: Texto extraído da área central da tela
-        """
-        # Captura a tela inteira
-        screenshot = ImageGrab.grab()
-        
-        # Obtém as dimensões da tela
-        screen_width, screen_height = screenshot.size
-        
-        # Calcula a área de interesse (excluindo o padding)
-        left = padding
-        top = padding
-        right = screen_width - padding
-        bottom = screen_height - padding
-        
-        # Recorta a imagem para a área desejada
-        cropped_image = screenshot.crop((left, top, right, bottom))
-        
-        # Extrai o texto usando OCR
-        text = pytesseract.image_to_string(cropped_image, lang='por')
-        
-        return text.strip()
+
     
 
     def _load_config(self):
@@ -262,4 +235,15 @@ class OCR:
         
         from region_config_window import RegionConfigWindow
         return RegionConfigWindow(parent, self, account_name)
-        
+    
+
+    def read_screen(self) -> str:
+        try:
+            screenshot = ImageGrab.grab(bbox=(822, 380, 1116, 694))
+            a = pytesseract.image_to_string(screenshot, config='--psm 6').strip()
+            print(a)
+            return a
+        except Exception as e:
+            print(f"Erro ao extrair texto da tela: {e}")
+            return ""
+

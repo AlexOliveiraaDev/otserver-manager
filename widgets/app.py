@@ -195,6 +195,13 @@ class App:
         buttons_frame = tk.Frame(self.root, bg="#2c3e50")
         buttons_frame.pack(fill=tk.X, padx=20, pady=(0, 20))
         
+        
+        
+        self.botao_teste = ModernButton(buttons_frame, "Teste", 
+                                              command=lambda: read_screen(),
+                                              bg_color="#27ae60", hover_color="#229954")
+        self.botao_teste.pack(side=tk.LEFT, padx=5)
+        
         self.botao_iniciar_tudo = ModernButton(buttons_frame, "Iniciar Todas", 
                                               command=self.iniciar_todas_thread,
                                               bg_color="#27ae60", hover_color="#229954")
