@@ -5,6 +5,7 @@ import psutil
 import pyautogui
 import win32gui
 import win32process
+import win32con
 from gamestats import GameStats
 from config import *
 import config
@@ -132,6 +133,8 @@ class Conta:
 
             self.hwnd = hwnd
             self.window_title = win32gui.GetWindowText(self.hwnd)
+            
+            win32gui.ShowWindow(self.hwnd, win32con.SW_MAXIMIZE)
             
             if self.ocr:
                 self.ocr.set_window_handle(self.hwnd)
