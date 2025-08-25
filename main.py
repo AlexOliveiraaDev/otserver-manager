@@ -1,5 +1,4 @@
 import tkinter as tk
-from config import *
 import config
 from ocr.ocr import OCR
 from paths import init_exec_paths
@@ -13,7 +12,7 @@ if __name__ == "__main__":
     init_exec_paths()
     
     print(f"Sistema OCR: {'Habilitado' if config.OCR_ENABLED else 'Desabilitado'}")
-    print(f"Iniciando aplicação com API na porta {API_PORT}")
+    print(f"Iniciando aplicação com API na porta {config.API_PORT}")
     print("Aguarde alguns segundos para a API ficar disponível...")
     
     root = tk.Tk()
