@@ -8,6 +8,7 @@ import win32con
 import ctypes
 import psutil
 from config import *
+import config
 
 def esperar(segundos):
     
@@ -69,7 +70,8 @@ def encontrar_janela_por_processo(used_pids=None):
         try:
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
-                    if 'otc' in proc.info['name'].lower() and 'dashboard' not in proc.info['name'].lower():
+                    keywords = config.KEYWORDS
+                    if any(k in proc.info['name'].lower() for k in keywords) and 'dashboard' not in proc.info['name'].lower():
                         if proc.pid in used_pids:
                             continue
                         

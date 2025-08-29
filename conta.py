@@ -73,7 +73,10 @@ class Conta:
         try:
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
-                    if 'otc' in proc.info['name'].lower() and proc.pid not in self._used_pids:
+                    keywords = config.KEYWORDS
+                    name = proc.info['name'].lower()
+
+                    if any(k in name for k in keywords) and proc.pid not in self._used_pids:
                         def callback(hwnd, pid_list):
                             try:
                                 _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
@@ -151,7 +154,7 @@ class Conta:
                 screen_text = self.ocr.read_screen()
                 print("screentext" + screen_text)
                 
-                keywords = ["account name", "password", "token", "login", "optimize", "connection", "remember"]  
+                keywords = config.KEYWORDS
 
                 while not any(word in screen_text.lower() for word in keywords):
                     pyautogui.press('enter')
@@ -184,6 +187,7 @@ class Conta:
             print(f"Erro ao iniciar conta {self.login}: {e}")
             return False
 
+  
     def mostrar(self):
         try:
             if not self.hwnd or not win32gui.IsWindow(self.hwnd):

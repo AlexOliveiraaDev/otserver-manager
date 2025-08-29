@@ -2,7 +2,7 @@ import os, shutil
 import config
 
 def init_exec_paths():
-    base_path = config.BASE_PATH
+    base_path = os.path.join(config.APPDATA, "OTClientV8", "Aurera")
     fallback = os.path.join(config.APPDATA, "AureraOT", "aurera_dx.exe")
     exe = os.path.join(base_path, "aurera_dx.exe")
 

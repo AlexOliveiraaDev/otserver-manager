@@ -16,9 +16,11 @@ OCR_UPDATE_INTERVAL = 3600.0
 
 API_PORT = 5000
 
-OCR_ENABLED = True
+OCR_ENABLED = False
 OCR_CONFIG = '--psm 6'
 ocr_paused = False
+
+KEYWORDS = ['otc', 'client', 'tibia', 'otclient', 'otlauncher', 'aurera']
 
 logger = logging.getLogger(__name__)
 
