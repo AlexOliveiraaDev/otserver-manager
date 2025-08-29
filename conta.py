@@ -145,19 +145,21 @@ class Conta:
             
             esperar(DELAY_INICIAL)
             DELAY_INICIAL *= 1.02
-        
-            screen_text = self.ocr.read_screen()
-            print("screentext" + screen_text)
             
-            keywords = ["account name", "password", "token", "login", "optimize", "connection", "remember"]  
-
-            while not any(word in screen_text.lower() for word in keywords):
-                pyautogui.press('enter')
-                time.sleep(1)
-                pyautogui.press('esc')
-                time.sleep(2)
+            if (config.OCR_ENABLED):
+        
                 screen_text = self.ocr.read_screen()
-                time.sleep(1)
+                print("screentext" + screen_text)
+                
+                keywords = ["account name", "password", "token", "login", "optimize", "connection", "remember"]  
+
+                while not any(word in screen_text.lower() for word in keywords):
+                    pyautogui.press('enter')
+                    time.sleep(1)
+                    pyautogui.press('esc')
+                    time.sleep(2)
+                    screen_text = self.ocr.read_screen()
+                    time.sleep(1)
 
             pyautogui.write(self.login)
             pyautogui.press('tab')

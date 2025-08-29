@@ -2,6 +2,7 @@ flask
 flask-cors
 psutil
 pyautogui
+pywin32
 pytesseract
 pillow
 pynput
