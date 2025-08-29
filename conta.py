@@ -40,14 +40,60 @@ class Conta:
         self.ocr = ocr
 
     def _encontrar_janela_processo(self):
+        print(f"Debug: Iniciando _encontrar_janela_processo() para {self.login}")
+        print(f"Debug: used_pids atual: {self._used_pids}")
         
         hwnd, proc = encontrar_janela_por_processo(self._used_pids)
+        print(f"Debug: encontrar_janela_por_processo retornou:")
+        print(f"Debug: hwnd = {hwnd}")
+        print(f"Debug: proc = {proc}")
+        print(f"Debug: type(hwnd) = {type(hwnd)}")
+        print(f"Debug: type(proc) = {type(proc)}")
+        
         if hwnd and proc:
+            print(f"Debug: Janela e processo encontrados!")
+            print(f"Debug: proc.pid = {proc.pid}")
+            print(f"Debug: proc.name = {proc.info.get('name', 'N/A') if hasattr(proc, 'info') else 'N/A'}")
+            
             self.process = proc
             self.pid = proc.pid
             self._used_pids.add(proc.pid)
+            print(f"Debug: Processo definido e PID adicionado aos used_pids")
+            print(f"Debug: used_pids atualizado: {self._used_pids}")
+        else:
+            print(f"Debug: Nenhuma janela/processo encontrado")
+            print(f"Debug: Vamos verificar processos ativos...")
+            
+            # Debug adicional: listar todos os processos que contêm as keywords
+            try:
+                keywords = config.KEYWORDS
+                print(f"Debug: Keywords de busca: {keywords}")
+                
+                processos_encontrados = []
+                for proc in psutil.process_iter(['pid', 'name']):
+                    try:
+                        name = proc.info['name'].lower()
+                        if any(k in name for k in keywords):
+                            processos_encontrados.append({
+                                'pid': proc.pid,
+                                'name': proc.info['name'],
+                                'usado': proc.pid in self._used_pids
+                            })
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        continue
+                        
+                print(f"Debug: Processos encontrados com keywords:")
+                for p in processos_encontrados:
+                    print(f"Debug: - PID {p['pid']}: {p['name']} (usado: {p['usado']})")
+                    
+                if not processos_encontrados:
+                    print(f"Debug: NENHUM processo encontrado com as keywords!")
+                    print(f"Debug: Isso pode indicar que o executável não iniciou ou tem nome diferente")
+                
+            except Exception as e:
+                print(f"Debug: Erro ao listar processos: {e}")
+        
         return hwnd
-
     def encontrar_hwnd(self):
         try:
             hwnd = self._encontrar_janela_processo()
@@ -109,85 +155,246 @@ class Conta:
     def iniciar(self):
         global DELAY_INICIAL
         
+        print(f"Debug: Iniciando método iniciar() para conta {self.login}")
+        
+        # VERIFICAÇÃO DAS VARIÁVEIS DE EXECUTÁVEL
+        print(f"Debug: Verificando variáveis de executável...")
+        print(f"Debug: EXECUTAVEL = {EXECUTAVEL}")
+        print(f"Debug: EXECUTAVEL2 = {EXECUTAVEL2}")
+        print(f"Debug: config.EXECUTAVEL = {config.EXECUTAVEL}")
+        print(f"Debug: config.EXECUTAVEL2 = {config.EXECUTAVEL2}")
+        
+        # Usar as variáveis do config em vez das globais
+        executavel = config.EXECUTAVEL2 if self.indice >= 8 else config.EXECUTAVEL
+        print(f"Debug: Executável selecionado: {executavel}")
+        print(f"Debug: self.indice = {self.indice}")
+        print(f"Debug: Condição (self.indice >= 8): {self.indice >= 8}")
+        
+        if executavel is None:
+            print(f"Debug: ERRO - Executável ainda é None!")
+            print(f"Debug: Tentando re-inicializar paths...")
+            try:
+                from paths import init_exec_paths
+                init_exec_paths()
+                executavel = config.EXECUTAVEL2 if self.indice >= 8 else config.EXECUTAVEL
+                print(f"Debug: Após re-inicialização: {executavel}")
+            except Exception as e:
+                print(f"Debug: Erro ao re-inicializar: {e}")
+                self.status = 'crashed'
+                self.crash_time = datetime.now()
+                return False
+        
+        if executavel is None or not os.path.exists(executavel):
+            print(f"Debug: ERRO - Executável inválido ou não existe: {executavel}")
+            if executavel:
+                print(f"Debug: Arquivo existe: {os.path.exists(executavel)}")
+            self.status = 'crashed'
+            self.crash_time = datetime.now()
+            return False
+        
+        print(f"Debug: Executável validado com sucesso: {executavel}")
+        
+        # Verificar instância existente
+        print(f"Debug: Verificando instância existente...")
         if self.verificar_instancia_existente():
-            print(f"Instância de {self.login} já está rodando - reconectando...")
+            print(f"Debug: Instância de {self.login} já está rodando - reconectando...")
             self.status = 'aberta'
             return True
 
+        print(f"Debug: Nenhuma instância existente encontrada, iniciando nova...")
         self.status = 'iniciando'
-        executavel = EXECUTAVEL2 if self.indice >= 8 else EXECUTAVEL
-
+        
+        print(f"Debug: Tempo estimado calculado...")
         self.inicio_tempo = datetime.now()
         self.tempo_estimado = self.inicio_tempo + timedelta(
             seconds=DELAY_INICIAL + 5 + self.indice * 0.1 + DELAY_FINAL
         )
+        print(f"Debug: Tempo estimado: {self.tempo_estimado}")
 
         try:
+            print(f"Debug: Iniciando subprocess com executável: {executavel}")
             subprocess.Popen(executavel)
+            print(f"Debug: Subprocess iniciado, aguardando 3 segundos...")
             time.sleep(3)
             
-            hwnd = self._encontrar_janela_processo()
+            print(f"Debug: Procurando janela do processo...")
+            print(f"Debug: self._used_pids atual: {self._used_pids}")
+            
+            resultado = self._encontrar_janela_processo()
+            print(f"Debug: Resultado de _encontrar_janela_processo(): {resultado}")
+            print(f"Debug: Tipo do resultado: {type(resultado)}")
+            
+            if resultado is None:
+                print(f"Debug: _encontrar_janela_processo() retornou None")
+                hwnd = None
+            else:
+                hwnd = resultado
+                print(f"Debug: hwnd obtido: {hwnd}")
+            
             if not hwnd:
-                print(f"Não foi possível localizar a janela da conta {self.login}")
+                print(f"Debug: Não foi possível localizar a janela da conta {self.login}")
                 self.status = 'crashed'
                 self.crash_time = datetime.now()
                 return False
 
+            print(f"Debug: Janela encontrada com sucesso")
             self.hwnd = hwnd
-            self.window_title = win32gui.GetWindowText(self.hwnd)
+            
+            try:
+                self.window_title = win32gui.GetWindowText(self.hwnd)
+                print(f"Debug: Título da janela obtido: {self.window_title}")
+            except Exception as e:
+                print(f"Debug: Erro ao obter título da janela: {e}")
+                self.window_title = "Título não disponível"
+            
+            print(f"Debug: Verificando OCR...")
+            print(f"Debug: self.ocr = {self.ocr}")
+            print(f"Debug: type(self.ocr) = {type(self.ocr)}")
             
             if self.ocr:
-                self.ocr.set_window_handle(self.hwnd)
-            
-            print(f"Janela encontrada para {self.login}: hwnd={self.hwnd}")
-            
-            if forcar_foco_janela(self.hwnd):
-                print(f"Foco definido com sucesso para {self.login}")
+                print(f"Debug: Configurando window handle no OCR...")
+                try:
+                    self.ocr.set_window_handle(self.hwnd)
+                    print(f"Debug: Window handle configurado no OCR com sucesso")
+                except Exception as e:
+                    print(f"Debug: Erro ao configurar window handle no OCR: {e}")
             else:
-                print(f"Falha ao definir foco para {self.login}")
+                print(f"Debug: OCR não está disponível")
             
+            print(f"Debug: Janela encontrada para {self.login}: hwnd={self.hwnd}")
+            
+            print(f"Debug: Forçando foco da janela...")
+            if forcar_foco_janela(self.hwnd):
+                print(f"Debug: Foco definido com sucesso para {self.login}")
+            else:
+                print(f"Debug: Falha ao definir foco para {self.login}")
+            
+            print(f"Debug: Aguardando DELAY_INICIAL ({DELAY_INICIAL} segundos)...")
             esperar(DELAY_INICIAL)
             DELAY_INICIAL *= 1.02
+            print(f"Debug: DELAY_INICIAL atualizado para: {DELAY_INICIAL}")
             
-            if (config.OCR_ENABLED):
-        
-                screen_text = self.ocr.read_screen()
-                print("screentext" + screen_text)
+            print(f"Debug: Verificando OCR_ENABLED...")
+            print(f"Debug: config.OCR_ENABLED = {config.OCR_ENABLED}")
+            
+            if config.OCR_ENABLED:
+                print(f"Debug: OCR está habilitado")
+                print(f"Debug: Verificando se self.ocr existe...")
                 
-                keywords = config.KEYWORDS
+                if self.ocr is None:
+                    print(f"Debug: ERRO - self.ocr é None mas OCR_ENABLED está True!")
+                    print(f"Debug: Pulando verificação de OCR...")
+                else:
+                    print(f"Debug: self.ocr existe, tentando ler tela...")
+                    try:
+                        screen_text = self.ocr.read_screen()
+                        print(f"Debug: screen_text obtido")
+                        print(f"Debug: type(screen_text) = {type(screen_text)}")
+                        print(f"Debug: screen_text = '{screen_text}'")
+                        
+                        if screen_text is None:
+                            print(f"Debug: screen_text é None, definindo como string vazia")
+                            screen_text = ""
+                        
+                        keywords = ["account name", "password", "token", "login", "optimize", "connection", "remember"]
+                        print(f"Debug: Keywords definidas: {keywords}")
+                        
+                        print(f"Debug: Verificando se alguma keyword está presente...")
+                        screen_text_lower = screen_text.lower() if screen_text else ""
+                        print(f"Debug: screen_text_lower = '{screen_text_lower}'")
+                        
+                        keyword_found = any(word in screen_text_lower for word in keywords)
+                        print(f"Debug: Keyword encontrada: {keyword_found}")
+                        
+                        loop_count = 0
+                        while not keyword_found:
+                            loop_count += 1
+                            print(f"Debug: Loop #{loop_count} - Nenhuma keyword encontrada, pressionando enter...")
+                            
+                            pyautogui.press('enter')
+                            time.sleep(1)
+                            pyautogui.press('esc')
+                            time.sleep(2)
+                            
+                            print(f"Debug: Lendo tela novamente...")
+                            try:
+                                screen_text = self.ocr.read_screen()
+                                print(f"Debug: Nova leitura - type(screen_text) = {type(screen_text)}")
+                                print(f"Debug: Nova leitura - screen_text = '{screen_text}'")
+                                
+                                if screen_text is None:
+                                    print(f"Debug: screen_text é None na nova leitura")
+                                    screen_text = ""
+                                
+                                screen_text_lower = screen_text.lower() if screen_text else ""
+                                keyword_found = any(word in screen_text_lower for word in keywords)
+                                print(f"Debug: Keyword encontrada na nova tentativa: {keyword_found}")
+                                
+                            except Exception as e:
+                                print(f"Debug: Erro ao ler tela no loop: {e}")
+                                screen_text = ""
+                                screen_text_lower = ""
+                                keyword_found = False
+                            
+                            time.sleep(1)
+                            
+                            # Segurança para evitar loop infinito
+                            if loop_count > 10:
+                                print(f"Debug: Limite de tentativas atingido (10), saindo do loop")
+                                break
+                        
+                        print(f"Debug: Saiu do loop de verificação de keywords")
+                        
+                    except Exception as e:
+                        print(f"Debug: Erro durante verificação OCR: {e}")
+                        print(f"Debug: Continuando sem verificação OCR...")
+            else:
+                print(f"Debug: OCR não está habilitado, pulando verificação")
 
-                while not any(word in screen_text.lower() for word in keywords):
-                    pyautogui.press('enter')
-                    time.sleep(1)
-                    pyautogui.press('esc')
-                    time.sleep(2)
-                    screen_text = self.ocr.read_screen()
-                    time.sleep(1)
-
+            print(f"Debug: Iniciando processo de login...")
+            print(f"Debug: Digitando login: {self.login}")
             pyautogui.write(self.login)
             pyautogui.press('tab')
             time.sleep(0.5)
+            
+            print(f"Debug: Digitando senha...")
             pyautogui.write(self.senha)
             pyautogui.press('enter')
 
+            print(f"Debug: Aguardando 5 segundos...")
             esperar(5)
-            for _ in range(self.id):
+            
+            print(f"Debug: Pressionando 'down' {self.id} vezes...")
+            for i in range(self.id):
+                print(f"Debug: Pressionando 'down' - iteração {i+1}/{self.id}")
                 pyautogui.press('down')
+                
+            print(f"Debug: Pressionando enter final...")
             pyautogui.press('enter')
             esperar(3)
 
+            print(f"Debug: Definindo status como 'aberta'...")
             self.status = 'aberta'
             self.crash_time = None
             self.last_window_check = datetime.now()
+            
+            print(f"Debug: Inicialização concluída com sucesso para {self.login}")
             return True
 
         except Exception as e:
+            print(f"Debug: ERRO CAPTURADO durante inicialização:")
+            print(f"Debug: Tipo do erro: {type(e).__name__}")
+            print(f"Debug: Mensagem do erro: {str(e)}")
+            print(f"Debug: Linha do erro: {e.__traceback__.tb_lineno if e.__traceback__ else 'N/A'}")
+            
+            import traceback
+            print(f"Debug: Traceback completo:")
+            traceback.print_exc()
+            
             self.status = 'crashed'
             self.crash_time = datetime.now()
-            print(f"Erro ao iniciar conta {self.login}: {e}")
+            print(f"Debug: Status definido como 'crashed' para {self.login}")
             return False
-
-  
     def mostrar(self):
         try:
             if not self.hwnd or not win32gui.IsWindow(self.hwnd):
